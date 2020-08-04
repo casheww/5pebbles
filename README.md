@@ -1,7 +1,7 @@
 # 5pebbles
 A Discord bot written with discord.py that interacts with the Rain World Gamepedia. Unofficial, ofc.
 
-If you'd like to add this bot to your server, you can use [this link](https://discord.com/api/oauth2/authorize?client_id=739950956313051219&permissions=67488832&scope=bot).
+If you'd like to add this bot to your server, you can use [this link](https://discord.com/api/oauth2/authorize?client_id=739950956313051219&permissions=67488832&scope=bot) (I'd rather you didn't run your own instance, ty).
 
 The default command prefix is `rain `, but this can be changed: `rain set_prefix <new>`.
 
