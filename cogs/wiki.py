@@ -1,5 +1,6 @@
 import aiomediawiki.exceptions as wiki_error
 import aiohttp
+import asyncio
 from bs4 import BeautifulSoup
 import discord
 from discord.ext import commands
@@ -14,13 +15,17 @@ class RainWorldWiki(commands.Cog):
 
     async def get_pages(self, limit, query):
         pages = []
+        page_dict = {}
+        page_number = 1
         async for page in await self.bot.wiki.search(query, limit=limit):
-            pages.append(f"[{page.title}]({page.url})")
+            pages.append(f"{page_number}. [{page.title}]({page.url})")
+            page_dict[str(page_number)] = page.pageid
+            page_number += 1
 
         if not pages:
             raise wiki_error.MissingPage
 
-        return "\n".join(pages)
+        return "\n".join(pages), page_dict
 
 
     @staticmethod
@@ -69,15 +74,49 @@ class RainWorldWiki(commands.Cog):
     async def search(self, ctx, limit: Optional[int], *, query):
         if len(query) > 40:
             return await ctx.send("Max. query length is 40 characters.")
+        if limit is not None and limit not in range(1, 11):
+            return await ctx.send("Search limit must be between 1 and 10 inclusive.")
 
         limit = limit if limit is not None else 5
 
-        pages_str = await self.get_pages(limit, query)
+        pages_str, page_dict = await self.get_pages(limit, query)
 
         r = discord.Embed(colour=0x180d1f)
         r.add_field(name="Results", value=pages_str)
+        r.set_footer(text="Reply with a number to get the summary of the corresponding page.")
 
         await ctx.send(embed=r)
+
+        def check(m):
+            return m.channel == ctx.channel and m.author.id == ctx.author.id
+
+        try:
+            reply = await self.bot.wait_for("message", check=check, timeout=30)
+
+            if reply.content in page_dict.keys():
+                page = await self.bot.wiki.get_page(pageid=page_dict[reply.content])
+
+                r = discord.Embed(colour=0x2b2233)
+
+                r.set_author(name=page.title, url=page.url)
+
+                if len(page.summary) < 640:
+                    r.description = page.summary
+                else:
+                    r.description = f"{page.summary[:640]}\n..."
+
+                thumbnail_url = await self.get_thumbnail(await self.parse_page(page.url))
+                if thumbnail_url:
+                    r.set_thumbnail(url=thumbnail_url)
+
+                if page.categories:
+                    r.set_footer(text=f"Categories: {', '.join(page.categories)}")
+
+                await ctx.send(embed=r)
+
+        except asyncio.TimeoutError:
+            pass
+
 
 
     @commands.command(description="Searches the wiki for results. "
@@ -93,7 +132,7 @@ class RainWorldWiki(commands.Cog):
 
         except wiki_error.MissingPage:
             r.description = "Page not found :(\nMaybe you want one of these:"
-            r.add_field(name=f"Search for {query}:", value=await self.get_pages(5, query))
+            r.add_field(name=f"Search for {query}:", value=(await self.get_pages(5, query))[0])
             return await ctx.send(embed=r)
 
         r.set_author(name=page.title, url=page.url)
