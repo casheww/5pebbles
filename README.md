@@ -3,7 +3,7 @@ A Discord bot written with discord.py that interacts with the Rain World Gameped
 
 If you'd like this bot to your server, you can use [this link](https://discord.com/api/oauth2/authorize?client_id=739950956313051219&permissions=67488832&scope=bot).
 
-The default command prefix is `rain `, but this can be changed: `rain set_prefix [new]`.
+The default command prefix is `rain `, but this can be changed: `rain set_prefix <new>`.
 
 ### Notable commands
 `search [limit] <query>` - searches the RW Gamepedia for results matching the query and returns them. Result limit is optional.
