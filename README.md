@@ -9,3 +9,7 @@ The default command prefix is `rain `, but this can be changed: `rain set_prefix
 `search [limit] <query>` - searches the RW Gamepedia for results matching the query and returns them. Result limit is optional.
 
 `page <query>` - tries to find a page with a title matching the query, and returns the summary and thumbnail (if available). The title of the returned embed also contains a hyperlink to the wiki page.
+
+### TODO
+- Creature stats command
+- Command for fetching the source URLs for all of a page's images?
