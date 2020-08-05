@@ -33,20 +33,24 @@ class ServerTools(commands.Cog):
         await ctx.send('Guild data has been reset.')
 
 
-    @commands.command(description="Set a custom command prefix for this guild.",
+    @commands.command(description="Set a custom command prefix for this guild. "
+                                  "To add trailing whitespace, enter the new prefix "
+                                  "as in-line code, e.g. \\`rain \\`",
                       brief="Manage Server permission required.")
     @commands.has_guild_permissions(manage_guild=True)
     async def set_prefix(self, ctx, *, prefix: str = ""):
         if prefix == "" or len(prefix) > 10:
-            await ctx.send("Please enter a custom command prefix. E.g.: `set_prefix !`. "
+            return await ctx.send("Please enter a custom command prefix. E.g.: `set_prefix \\`!\\``. "
                            "Prefix must be less than 10 characters long.")
-        else:
-            guild_info = await db_interface.get_guild_data(self.bot.db, ctx.guild.id)
-            guild_info['info']['prefix'] = prefix
-            await db_interface.dump_guild_data(self.bot.db, ctx.guild.id, guild_info)
-            self.bot.prefix_dict[ctx.guild.id] = prefix
 
-            await ctx.send(f"Prefix set to: `{prefix}`")
+        prefix = prefix.strip("`")
+
+        guild_info = await db_interface.get_guild_data(self.bot.db, ctx.guild.id)
+        guild_info['info']['prefix'] = prefix
+        await db_interface.dump_guild_data(self.bot.db, ctx.guild.id, guild_info)
+        self.bot.prefix_dict[ctx.guild.id] = prefix
+
+        await ctx.send(f"Prefix set to: `{prefix}`")
 
 
 def setup(bot):
