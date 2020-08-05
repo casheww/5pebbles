@@ -9,7 +9,7 @@ from src.context import CustomContext
 
 
 class Pebbles(commands.Bot):
-    def __init__(self):
+    def __init__(self, version):
         super().__init__(command_prefix=self.get_prefix,
                          case_insensitive=True,
                          description="A bot that interacts with the Rain World Gamepedia. "
@@ -19,7 +19,7 @@ class Pebbles(commands.Bot):
         self.log_id = 584971929778257930
         self.prefix_dict = {}
         self.start_time = datetime.now()
-        self.version = 1.0
+        self.version = version
         self.wiki = MediaWiki(url="https://rainworld.gamepedia.com/api.php")
 
 
@@ -65,9 +65,11 @@ class Pebbles(commands.Bot):
 
 if __name__ == "__main__":
     with open("_keys.json") as f:
-        token = json.load(f)["discord"]
+        keys = json.load(f)
+        token = keys["discord"]
+        v = keys["version"]
 
-    bot = Pebbles()
+    bot = Pebbles(version=v)
 
     bot.load_extension("jishaku")
     for ext in os.listdir("cogs"):

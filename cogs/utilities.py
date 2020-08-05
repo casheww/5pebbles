@@ -25,8 +25,9 @@ class Utilities(commands.Cog):
         embed = discord.Embed(description=self.bot.description, colour=ctx.colour)
         embed.set_author(name=str(self.bot.user), url="https://www.github.com/casheww/kahu")
         embed.add_field(name="Commands", value=str(len(self.bot.commands)))
+        embed.add_field(name="Guilds", value=str(len(self.bot.guilds)))
         embed.add_field(name="casheww's Github", value="[Click me!](https://www.github.com/casheww/)")
-        embed.add_field(name="\u200B", value=f"**Pebbles Bot**: {self.bot.version}"
+        embed.add_field(name="\u200B", value=f"**Bot version**: {self.bot.version}\n"
                                              f"**Python**: {platform.python_version()} | "
                                              f"**discord.py**: {discord.__version__}")
         await ctx.send(embed=embed)
