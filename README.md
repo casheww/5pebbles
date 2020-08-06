@@ -10,7 +10,9 @@ The default command prefix is `rain `, but this can be changed: `rain set_prefix
 
 `page <query>` - tries to find a page with a title matching the query, and returns the summary and thumbnail (if available). The title of the returned embed also contains a hyperlink to the wiki page.
 
-`creature/c <query>` - tries to find a Creature page with a title matching the query and and returns what creature stats and spawn info it can find. Similar to the page command. 
+`creature/c <query>` - tries to find a Creature page with a title matching the query and and returns what creature stats and spawn info it can find. Similar to the `page` command. 
+
+`region/r <query>` - sends the list of creatures from and a map of the Region, if found. Similar to the `creature` and `page` commands.
 
 ### TODO
 - Command for fetching the source URLs for all of a page's images?
