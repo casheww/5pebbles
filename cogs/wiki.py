@@ -1,4 +1,4 @@
-import aiomediawiki.exceptions as wiki_error
+import aiomediawiki.exceptions as wiki_errors
 import asyncio
 import discord
 from discord.ext import commands
@@ -12,7 +12,8 @@ class RainWorldWiki(commands.Cog):
         self.bot = bot
 
 
-    @commands.command(description="Searches the wiki for results.")
+    @commands.command(description="Searches the wiki for results.",
+                      aliases=["s"])
     async def search(self, ctx, limit: Optional[int], *, query):
         if len(query) > 40:
             return await ctx.send("Max. query length is 40 characters.")
@@ -47,19 +48,24 @@ class RainWorldWiki(commands.Cog):
             pass
 
 
-
     @commands.command(description="Searches the wiki for results. "
-                                  "The first result is returned in detail.")
-    async def page(self, ctx, *, query):
+                                  "The first result is returned in detail.",
+                      aliases=["p"])
+    async def page(self, ctx, *, query: str):
         if len(query) > 40:
             return await ctx.send("Max. query length is 40 characters.")
 
         r = wikiutils.RWPageEmbed(colour=0x2b2233)
 
         try:
-            page = await self.bot.wiki.get_page(query.title())
+            if query.lower().startswith("looks to the moon"):
+                query = query.lower().replace("looks to the moon", "Looks to the Moon")
+            else:
+                query = query.title()
+                
+            page = await self.bot.wiki.get_page(query)
 
-        except wiki_error.MissingPage:
+        except wiki_errors.MissingPage:
             r.description = "Page not found :(\nMaybe you want one of these:"
             r.add_field(name=f"Search for {query}:", value=(await wikiutils.get_page_refs(self.bot, 5, query))[0])
             return await ctx.send(embed=r)
@@ -69,8 +75,7 @@ class RainWorldWiki(commands.Cog):
         await ctx.send(embed=r)
 
 
-    @commands.command(description="Tries to find a matching creature from the wiki "
-                                  "and return any stats provided.",
+    @commands.command(description="Provides creature stats from the wiki.",
                       aliases=["c"])
     async def creature(self, ctx, *, query):
         if len(query) > 40:
@@ -83,11 +88,10 @@ class RainWorldWiki(commands.Cog):
             if "Creatures" not in page.categories:
                 return await ctx.send("That page exists, but it's not a creature.")
 
-        except wiki_error.MissingPage:
+        except wiki_errors.MissingPage:
             return await ctx.send("That page doesn't exist.")
 
         r.set_author(name=page.title, url=page.url)
-
         parsed = await wikiutils.parse_page(page.url)
 
         stats_blocks = await wikiutils.get_creature_stats(parsed)
@@ -102,6 +106,43 @@ class RainWorldWiki(commands.Cog):
 
         await ctx.send(embed=r)
 
+
+    @commands.command(description="Provides region map and threats.",
+                      aliases=["r"])
+    async def region(self, ctx, *, query):
+        if len(query) > 40:
+            return await ctx.send("Max. query length is 40 characters.")
+
+        r = wikiutils.RWRegionEmbed(colour=0x33132d)
+
+        try:
+            if query.lower() in ["five pebbles", "5p", "fp"]:
+                query = "Five Pebbles (region)"
+            elif query.lower() in ["lttm", "looks to the moon"]:
+                query = "Looks to the Moon (region)"
+            else:
+                query = query.title()
+
+            page = await self.bot.wiki.get_page(query)
+            if "Regions" not in page.categories:
+                return await ctx.send("That page exists, but it's not a region.")
+
+        except wiki_errors.MissingPage:
+            return await ctx.send("That page doesn't exist.")
+
+        r.set_author(name=page.title, url=page.url)
+        parsed = await wikiutils.parse_page(page.url)
+
+        r.description = f"{page.summary.split('.')[0]}."
+
+        threat_dict = wikiutils.get_region_threats(parsed)
+        r.format_threats(threat_dict)
+
+        img_url = wikiutils.get_region_map(parsed)
+        if img_url:
+            r.set_image(url=img_url)
+
+        await ctx.send(embed=r)
 
 
 def setup(bot):

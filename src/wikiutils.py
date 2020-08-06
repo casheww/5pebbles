@@ -33,7 +33,14 @@ def get_page_thumbnail(parsed: BeautifulSoup):
         return img.get("src")
 
 
-async def get_creature_stats(parsed: BeautifulSoup):
+def get_region_map(parsed: BeautifulSoup):
+    a = parsed.find("a", attrs={"class": "image"})
+    if a:
+        for img in a.children:
+            return img.get("src")
+
+
+def get_creature_stats(parsed: BeautifulSoup):
     """ This was painful. """
     source_stats_tables = parsed.find_all("table", attrs={"class": "infoboxtable"})
     source_stats_tables = [x.find("tbody") for x in source_stats_tables]
@@ -56,9 +63,42 @@ async def get_creature_stats(parsed: BeautifulSoup):
     return stats_blocks
 
 
+def get_region_threats(parsed: BeautifulSoup):
+    paras = parsed.find_all("p")
+    threats = {}
+
+    for p in paras:
+        if p.text.startswith("The following creatures"):
+            level = p.text.split()[-2].title()
+            threats[level] = []
+            threat_list = p.next_sibling.next_sibling
+
+            subspecies_count_to_ignore = 0
+
+            for item in threat_list.find_all("li"):
+                if subspecies_count_to_ignore > 0:
+                    subspecies_count_to_ignore -= 1
+                    continue
+
+                if "\n" in item.text:
+                    split = item.text.split("\n")
+                    species = split[0]
+                    subspecies = split[1:]
+                    subspecies_count_to_ignore = len(subspecies)
+
+                    threats[level].append(f"{species} {[s for s in subspecies]}")
+
+                else:
+                    threats[level].append(item.text)
+
+    return threats
+
+
 class RWPageEmbed(discord.Embed):
-    def __init__(self, **kwargs):
-        super().__init__(kwargs=kwargs)
+    def __init__(self, colour):
+        super().__init__()
+        self.colour = colour
+
 
     async def rw_format(self, page):
         self.set_author(name=page.title, url=page.url)
@@ -74,3 +114,15 @@ class RWPageEmbed(discord.Embed):
 
         if page.categories:
             self.set_footer(text=f"Categories: {', '.join(page.categories)}")
+
+
+class RWRegionEmbed(discord.Embed):
+    def __init__(self, colour):
+        super().__init__()
+        self.colour = colour
+
+    def format_threats(self, threats):
+        for level in threats.keys():
+            self.add_field(name=level,
+                           value='\n'.join([f"- `{t}`" for t in threats[level]]),
+                           inline=False)
