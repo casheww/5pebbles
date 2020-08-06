@@ -6,9 +6,9 @@ If you'd like to add this bot to your server, you can use [this link](https://di
 The default command prefix is `rain `, but this can be changed: `rain set_prefix <new>`.
 
 ### Notable commands
-`search [limit] <query>` - searches the RW Gamepedia for results matching the query and returns them. Result limit is optional.
+`search/s [limit] <query>` - searches the RW Gamepedia for results matching the query and returns them. Result limit is optional.
 
-`page <query>` - tries to find a page with a title matching the query, and returns the summary and thumbnail (if available). The title of the returned embed also contains a hyperlink to the wiki page.
+`page/p <query>` - tries to find a page with a title matching the query, and returns the summary and thumbnail (if available). The title of the returned embed also contains a hyperlink to the wiki page.
 
 `creature/c <query>` - tries to find a Creature page with a title matching the query and and returns what creature stats and spawn info it can find. Similar to the `page` command. 
 
