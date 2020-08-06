@@ -94,7 +94,11 @@ class RainWorldWiki(commands.Cog):
         r.set_author(name=page.title, url=page.url)
         parsed = await wikiutils.parse_page(page.url)
 
-        stats_blocks = await wikiutils.get_creature_stats(parsed)
+        if page.name == "Lizards":
+            r.description = "There are many different types of lizards in Rain World. " \
+                            "To see their stats, be specific: e.g. `creature green lizard`!"
+
+        stats_blocks = wikiutils.get_creature_stats(parsed)
         for block in stats_blocks:
             for k in block.keys():
                 r.add_field(name=k, value=block[k])
