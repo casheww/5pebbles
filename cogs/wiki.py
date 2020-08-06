@@ -94,7 +94,7 @@ class RainWorldWiki(commands.Cog):
         r.set_author(name=page.title, url=page.url)
         parsed = await wikiutils.parse_page(page.url)
 
-        if page.name == "Lizards":
+        if page.title == "Lizards":
             r.description = "There are many different types of lizards in Rain World. " \
                             "To see their stats, be specific: e.g. `creature green lizard`!"
 
