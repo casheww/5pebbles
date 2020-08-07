@@ -20,6 +20,8 @@ class RainWorldWiki(commands.Cog):
         if limit is not None and limit not in range(1, 11):
             return await ctx.send("Search limit must be between 1 and 10 inclusive.")
 
+        await ctx.trigger_typing()
+
         limit = limit if limit is not None else 5
 
         pages_str, page_dict = await wikiutils.get_page_refs(self.bot, limit, query)
@@ -55,6 +57,8 @@ class RainWorldWiki(commands.Cog):
         if len(query) > 40:
             return await ctx.send("Max. query length is 40 characters.")
 
+        await ctx.trigger_typing()
+
         r = wikiutils.RWPageEmbed(colour=0x2b2233)
 
         try:
@@ -80,6 +84,8 @@ class RainWorldWiki(commands.Cog):
     async def creature(self, ctx, *, query):
         if len(query) > 40:
             return await ctx.send("Max. query length is 40 characters.")
+
+        await ctx.trigger_typing()
 
         r = discord.Embed(colour=0x2b2233)
 
@@ -135,6 +141,8 @@ class RainWorldWiki(commands.Cog):
     async def region(self, ctx, *, query):
         if len(query) > 40:
             return await ctx.send("Max. query length is 40 characters.")
+
+        await ctx.trigger_typing()
 
         r = wikiutils.RWRegionEmbed(colour=0x33132d)
 
