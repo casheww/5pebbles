@@ -58,10 +58,10 @@ def get_page_thumbnail(parsed: BeautifulSoup):
 
 
 def get_region_map(parsed: BeautifulSoup):
-    a = parsed.find("a", attrs={"class": "image"})
-    if a:
-        for img in a.children:
-            return img.get("src")
+    a_list = parsed.find_all("a", attrs={"class": "image"})
+    for a in a_list:
+        if "class" not in a.contents[0].attrs:
+            return a.contents[0].get("src")
 
 
 def get_creature_stats(parsed: BeautifulSoup):
