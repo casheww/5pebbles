@@ -4,6 +4,30 @@ from bs4 import BeautifulSoup
 import discord
 
 
+region_dict = {
+    "Chimney Canopies": ["cc", "chimney"],
+    "Drainage System": ["ds", "drainage"],
+    "Garbage Wastes": ["gw", "garbage"],
+    "Industrial Complex": ["hi", "industrial"],
+    "Farm Arrays": ["lf", "farm"],
+    "Subterranean": ["sb", "sub"],
+    "Filtration System": ["filtration"],
+    "Depths": ["depths", "the depths"],
+    "Shaded Citadel": ["sh", "shaded"],
+    "Memory Crypts": ["memory"],
+    "Sky Islands": ["si", "sky"],
+    "Communications Array": ["communication"],
+    "Shoreline": ["sl", "shoreline"],
+    "Looks to the Moon (region)": ["looks", "lttm", "moon"],
+    "Five Pebbles (region)": ["ss", "five", "fp"],
+    "Outskirts": ["su", "outskirts"],
+    "The Exterior": ["uw"],
+    "The Leg": ["the leg", "leg"],
+    "The Wall": ["the wall", "wall"],
+    "The Underhang": ["the underhang", "underhang", "uh"]
+}
+
+
 async def get_page_refs(bot, limit, query):
     pages = []
     page_dict = {}

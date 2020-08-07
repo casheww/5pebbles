@@ -84,12 +84,19 @@ class RainWorldWiki(commands.Cog):
         r = discord.Embed(colour=0x2b2233)
 
         try:
-            page = await self.bot.wiki.get_page(query.title())
+            if query.lower() in ["lttm", "looks to the moon"]:
+                query = "Looks to the Moon (character)"
+            else:
+                query = query.title()
+
+            page = await self.bot.wiki.get_page(query)
             if "Creatures" not in page.categories:
-                return await ctx.send("That page exists, but it's not a creature.")
+                raise wiki_errors.MissingPage
 
         except wiki_errors.MissingPage:
-            return await ctx.send("That page doesn't exist.")
+            r.description = "Creature page not found :(\nMaybe you want one of these:"
+            r.add_field(name=f"Search for {query}:", value=(await wikiutils.get_page_refs(self.bot, 5, query))[0])
+            return await ctx.send(embed=r)
 
         r.set_author(name=page.title, url=page.url)
         parsed = await wikiutils.parse_page(page.url)
@@ -98,11 +105,23 @@ class RainWorldWiki(commands.Cog):
             r.description = "There are many different types of lizards in Rain World. " \
                             "To see their stats, be specific: e.g. `creature green lizard`!"
 
-        stats_blocks = wikiutils.get_creature_stats(parsed)
-        for block in stats_blocks:
-            for k in block.keys():
-                r.add_field(name=k, value=block[k])
-            r.add_field(name="\u200B", value="\u200B", inline=False)
+        else:
+            stats_blocks = wikiutils.get_creature_stats(parsed)
+
+            if stats_blocks:
+                for block in stats_blocks:
+                    for k in block.keys():
+                        r.add_field(name=k, value=block[k])
+                    r.add_field(name="\u200B", value="\u200B", inline=False)
+
+            else:
+                if page.title == "Five Pebbles (character)":
+                    r.description = "Ah, that's me."
+                elif page.title == "Looks to the Moon (character)":
+                    r.description = "Looks to the Moon... her state is considerably worse than mine."
+                else:
+                    r.description = "No data was found for this creature..."
+
 
         thumbnail_url = wikiutils.get_page_thumbnail(parsed)
         if thumbnail_url:
@@ -120,19 +139,23 @@ class RainWorldWiki(commands.Cog):
         r = wikiutils.RWRegionEmbed(colour=0x33132d)
 
         try:
-            if query.lower() in ["five pebbles", "5p", "fp"]:
-                query = "Five Pebbles (region)"
-            elif query.lower() in ["lttm", "looks to the moon"]:
-                query = "Looks to the Moon (region)"
-            else:
-                query = query.title()
+            found = False
+            for region in wikiutils.region_dict.keys():
+                for alias in wikiutils.region_dict[region]:
+                    if query.lower().startswith(alias):
+                        query = region
+                        found = True
+                        break
 
-            page = await self.bot.wiki.get_page(query)
-            if "Regions" not in page.categories:
-                return await ctx.send("That page exists, but it's not a region.")
+            if not found:
+                raise wiki_errors.MissingPage
 
         except wiki_errors.MissingPage:
-            return await ctx.send("That page doesn't exist.")
+            r.description = "Region page not found :(\nMaybe you want one of these:"
+            r.add_field(name=f"Search for {query}:", value=(await wikiutils.get_page_refs(self.bot, 5, query))[0])
+            return await ctx.send(embed=r)
+
+        page = await self.bot.wiki.get_page(query)
 
         r.set_author(name=page.title, url=page.url)
         parsed = await wikiutils.parse_page(page.url)
