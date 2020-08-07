@@ -16,6 +16,9 @@ class EH(commands.Cog):
 
         error = getattr(error, "original", error)
 
+        if isinstance(error, commands.CommandNotFound):
+            return
+
         em_dict = {
             commands.ExtensionNotFound: "The extension was not found.",
             commands.ExtensionAlreadyLoaded: "The extension is already loaded.",
@@ -29,9 +32,6 @@ class EH(commands.Cog):
 
             wiki_error.MissingPage: "No results found :("
         }
-
-        if isinstance(error, commands.CommandNotFound):
-            return
 
         for e in em_dict:
             if isinstance(error, e):
