@@ -14,14 +14,14 @@ region_dict = {
     "Filtration System": ["filtration"],
     "Depths": ["depths", "the depths"],
     "Shaded Citadel": ["sh", "shaded"],
-    "Memory Crypts": ["memory"],
+    "Memory Crypts": ["mc", "memory"],
     "Sky Islands": ["si", "sky"],
     "Communications Array": ["communication"],
     "Shoreline": ["sl", "shoreline"],
     "Looks to the Moon (region)": ["looks", "lttm", "moon"],
     "Five Pebbles (region)": ["ss", "five", "fp"],
     "Outskirts": ["su", "outskirts"],
-    "The Exterior": ["uw"],
+    "The Exterior": ["uw", "exterior", "the exterior"],
     "The Leg": ["the leg", "leg"],
     "The Wall": ["the wall", "wall"],
     "The Underhang": ["the underhang", "underhang", "uh"]
@@ -58,10 +58,13 @@ def get_page_thumbnail(parsed: BeautifulSoup):
 
 
 def get_region_map(parsed: BeautifulSoup):
-    a_list = parsed.find_all("a", attrs={"class": "image"})
-    for a in a_list:
-        if "class" not in a.contents[0].attrs:
-            return a.contents[0].get("src")
+    img_list = parsed.find_all("img")
+    for img in img_list:
+        try:
+            if "Map" in img["alt"]:
+                return img["src"]
+        except KeyError:
+            pass
 
 
 def get_creature_stats(parsed: BeautifulSoup):
