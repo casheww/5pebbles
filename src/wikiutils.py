@@ -5,7 +5,7 @@ import discord
 
 
 region_dict = {
-    "Chimney Canopies": ["cc", "chimney"],
+    "Chimney Canopy": ["cc", "chimney"],
     "Drainage System": ["ds", "drainage"],
     "Garbage Wastes": ["gw", "garbage"],
     "Industrial Complex": ["hi", "industrial"],
