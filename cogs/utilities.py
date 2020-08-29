@@ -24,9 +24,9 @@ class Utilities(commands.Cog):
 
         embed = discord.Embed(description=self.bot.description, colour=ctx.colour)
         embed.set_author(name=str(self.bot.user), url="https://www.github.com/casheww/kahu")
-        embed.add_field(name="Commands", value=str(len(self.bot.commands)))
+        embed.add_field(name="Users", value=str(len(self.bot.users)))
         embed.add_field(name="Guilds", value=str(len(self.bot.guilds)))
-        embed.add_field(name="casheww's Github", value="[Click me!](https://www.github.com/casheww/)")
+        embed.add_field(name="Support Guild", value="[Join here](https://discord.gg/qK5JkSG)")
         embed.add_field(name="\u200B", value=f"**Bot version**: {self.bot.version}\n"
                                              f"**Python**: {platform.python_version()} | "
                                              f"**discord.py**: {discord.__version__}")
