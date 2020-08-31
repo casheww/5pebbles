@@ -38,6 +38,11 @@ class EH(commands.Cog):
                 await ctx.send(em_dict[e])
                 return
 
+        if isinstance(error, commands.CommandOnCooldown):
+            return await ctx.send(f"Please stop clattering through my internals. "
+                                  f"Cooldown: `{round(error.retry_after, 2)}s`",
+                                  delete_after=4)
+
         if isinstance(error, commands.CheckFailure):
             if hasattr(ctx, "custom_check_fail"):
                 msg = ctx.custom_check_fail
