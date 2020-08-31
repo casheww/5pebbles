@@ -57,12 +57,14 @@ def get_page_thumbnail(parsed: BeautifulSoup):
         return img.get("src")
 
 
-def get_region_map(parsed: BeautifulSoup):
-    img_list = parsed.find_all("img")
-    for img in img_list:
+def get_region_map(parsed: BeautifulSoup, region_name: str):
+    a_list = parsed.find_all("a", attrs={"class": "image"})
+    print(a_list)
+    for a in a_list:
         try:
-            if "Map" in img["alt"]:
-                return img["src"]
+            map_name = region_name.replace(" ", "_")
+            if map_name in a["href"]:
+                return a.find("img")["src"]
         except KeyError:
             pass
 
