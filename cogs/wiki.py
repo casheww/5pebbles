@@ -148,12 +148,16 @@ class RainWorldWiki(commands.Cog):
 
         try:
             found = False
-            for region in wikiutils.region_dict.keys():
-                for alias in wikiutils.region_dict[region]:
-                    if query.lower().startswith(alias):
-                        query = region
-                        found = True
-                        break
+            if query.lower() == "su":
+                query = "Outskirts"
+                found = True
+            else:
+                for region in wikiutils.region_dict.keys():
+                    for alias in wikiutils.region_dict[region]:
+                        if query.lower().startswith(alias):
+                            query = region
+                            found = True
+                            break
 
             if not found:
                 raise wiki_errors.MissingPage

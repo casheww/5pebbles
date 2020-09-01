@@ -20,7 +20,7 @@ region_dict = {
     "Shoreline": ["sl", "shoreline"],
     "Looks to the Moon (region)": ["looks", "lttm", "moon"],
     "Five Pebbles (region)": ["ss", "five", "fp"],
-    "Outskirts": ["su", "outskirts"],
+    "Outskirts": ["outskirts"],
     "The Exterior": ["uw", "exterior", "the exterior"],
     "The Leg": ["the leg", "leg"],
     "The Wall": ["the wall", "wall"],
