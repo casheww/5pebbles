@@ -58,15 +58,12 @@ def get_page_thumbnail(parsed: BeautifulSoup):
 
 
 def get_region_map(parsed: BeautifulSoup, region_name: str):
-    a_list = parsed.find_all("a", attrs={"class": "image"})
-    print(a_list)
-    for a in a_list:
-        try:
-            map_name = region_name.replace(" ", "_")
-            if map_name in a["href"]:
-                return a.find("img")["src"]
-        except KeyError:
-            pass
+    """ thanks Henpemaz """
+    img = parsed.find("span", attrs={"id": "Map"}).parent.next_sibling.next_sibling.find("img")
+    try:
+        return img["src"]
+    except KeyError:
+        pass
 
 
 def get_creature_stats(parsed: BeautifulSoup):
