@@ -50,7 +50,6 @@ class Pebbles(commands.Bot):
         await self.wait_until_ready()
 
         log_ch = self.get_channel(self.log_id)
-        await log_ch.send("bot started")
 
         self.db = await aiosqlite.connect("db/bot.db")
 
@@ -61,6 +60,8 @@ class Pebbles(commands.Bot):
                 self.prefix_dict[entry[0]] = prefix
             except KeyError:
                 pass
+
+        await log_ch.send("bot started")
 
 
 if __name__ == "__main__":
