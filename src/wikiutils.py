@@ -54,10 +54,15 @@ async def parse_page(url):
 def get_page_thumbnail(parsed: BeautifulSoup):
     img = parsed.find("img", attrs={"class": "thumbimage"})
     if img:
-        return img.get("src")
+        src = img["src"]
+        try:
+            src = "/".join(src.split("/")[:-4])
+        except KeyError:
+            pass
+        return src
 
 
-def get_region_map(parsed: BeautifulSoup, region_name: str):
+def get_region_map(parsed: BeautifulSoup):
     """ thanks Henpemaz """
     img = parsed.find("span", attrs={"id": "Map"}).parent.next_sibling.next_sibling.find("img")
     try:
