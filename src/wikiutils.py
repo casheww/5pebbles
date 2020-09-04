@@ -21,7 +21,7 @@ region_dict = {
     "Looks to the Moon (region)": ["looks", "lttm", "moon"],
     "Five Pebbles (region)": ["ss", "five", "fp", "5p"],
     "Recursive Transform Arrays": ["rta", "recursive"],
-    "Unfortunate Development", ["ud", "unfortunate"],
+    "Unfortunate Development": ["ud", "unfortunate"],
     "Memory Conflux": ["memory co"],
     "General Systems Bus": ["gsb", "general"],
     "Outskirts": ["outskirts"],
