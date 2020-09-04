@@ -177,7 +177,7 @@ class RainWorldWiki(commands.Cog):
         threat_dict = wikiutils.get_region_threats(parsed)
         r.format_threats(threat_dict)
 
-        img_url = wikiutils.get_region_map(parsed, page.title)
+        img_url = wikiutils.get_region_map(parsed)
         if img_url:
             r.set_image(url=img_url)
 
