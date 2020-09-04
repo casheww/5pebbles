@@ -68,7 +68,10 @@ def get_page_thumbnail(parsed: BeautifulSoup):
 
 def get_region_map(parsed: BeautifulSoup):
     """ thanks Henpemaz """
-    img = parsed.find("span", attrs={"id": "Map"}).parent.next_sibling.next_sibling.find("img")
+    try:
+        img = parsed.find("span", attrs={"id": "Map"}).parent.next_sibling.next_sibling.find("img")
+    except AttributeError:
+        img = parsed.find("img", attrs={"class": "thumbimage"})
     try:
         return img["src"]
     except KeyError:
