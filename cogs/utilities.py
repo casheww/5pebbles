@@ -33,5 +33,15 @@ class Utilities(commands.Cog):
         await ctx.send(embed=embed)
 
 
+    @commands.command(description="Clears messages from the bot in the current channel. "
+                                  "`limit` is the number of messages to check for bot authorship.",
+                      brief="Manage Messages permission required.")
+    @commands.has_permissions(manage_messages=True)
+    async def clean(self, ctx, limit: int = 25):
+        def check(m):
+            return self.bot.user.id == m.author.id
+        await ctx.channel.purge(limit=limit, check=check, bulk=False)
+
+
 def setup(bot):
     bot.add_cog(Utilities(bot))
