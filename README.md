@@ -16,3 +16,6 @@ The default command prefix is `rain `, but this can be changed: `rain set_prefix
 
 ### TODO
 - Command for fetching the source URLs for all of a page's images?
+- Add discord.py flags ext for toggleable creature section of `region` cmd, etc.
+- More obvious wiki page hyperlinks
+- Fix `region` threat lists breaking when a list covers more than one difficulty
