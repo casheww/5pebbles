@@ -132,19 +132,37 @@ def get_region_threats(parsed: BeautifulSoup):
     return threats
 
 
-class RWPageEmbed(discord.Embed):
+class RWBaseEmbed(discord.Embed):
     def __init__(self, colour):
         super().__init__()
         self.colour = colour
 
+    def add_hyperlink(self, url):
+        hyper = f"\n\n[View this page]({url})"
+        if len(self.fields) == 0:
+            self.description += hyper
+        else:
+            f_name = self.fields[-1].name
+            f_value = self.fields[-1].value
+            self.remove_field(-1)
+            self.add_field(name=f_name,
+                           value=f_value+hyper)
 
-    async def rw_format(self, page):
+    async def format(self, page):
+        ...
+
+
+class RWPageEmbed(RWBaseEmbed):
+    def __init__(self, colour):
+        super().__init__(colour)
+
+    async def format(self, page):
         self.set_author(name=page.title, url=page.url)
 
         if len(page.summary) < 640:
             self.description = page.summary
         else:
-            self.description = f"{page.summary[:640]}\n..."
+            self.description = f"{page.summary[:600]}\n..."
 
         thumbnail_url = get_page_thumbnail(await parse_page(page.url))
         if thumbnail_url:
@@ -153,11 +171,61 @@ class RWPageEmbed(discord.Embed):
         if page.categories:
             self.set_footer(text=f"Categories: {', '.join(page.categories)}")
 
+        self.add_hyperlink(page.url)
 
-class RWRegionEmbed(discord.Embed):
+
+class RWCreatureEmbed(RWBaseEmbed):
     def __init__(self, colour):
-        super().__init__()
-        self.colour = colour
+        super().__init__(colour)
+
+    async def format(self, page):
+        self.set_author(name=page.title, url=page.url)
+        parsed = await parse_page(page.url)
+
+        if page.title == "Lizards":
+            self.description = "There are many different types of lizards in Rain World. " \
+                            "To see their stats, be specific: e.g. `creature green lizard`!"
+
+        else:
+            stats_blocks = get_creature_stats(parsed)
+
+            if stats_blocks:
+                for block in stats_blocks:
+                    for k in block.keys():
+                        self.add_field(name=k, value=block[k])
+
+            else:
+                if page.title == "Five Pebbles (character)":
+                    self.description = "Ah, that's me."
+                elif page.title == "Looks to the Moon (character)":
+                    self.description = "Looks to the Moon... her state is considerably worse than mine."
+                else:
+                    self.description = "No data was found for this creature..."
+
+        thumbnail_url = get_page_thumbnail(parsed)
+        if thumbnail_url:
+            self.set_thumbnail(url=thumbnail_url)
+        self.add_hyperlink(page.url)
+
+
+class RWRegionEmbed(RWBaseEmbed):
+    def __init__(self, colour):
+        super().__init__(colour)
+
+    async def format(self, page):
+        self.set_author(name=page.title, url=page.url)
+        parsed = await parse_page(page.url)
+
+        self.description = f"{page.summary.split('.')[0]}."
+
+        threat_dict = get_region_threats(parsed)
+        self.format_threats(threat_dict)
+
+        img_url = get_region_map(parsed)
+        if img_url:
+            self.set_image(url=img_url)
+
+        self.add_hyperlink(page.url)
 
     def format_threats(self, threats):
         for level in threats.keys():

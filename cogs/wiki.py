@@ -42,7 +42,7 @@ class RainWorldWiki(commands.Cog):
                 page = await self.bot.wiki.get_page(pageid=page_dict[reply.content])
 
                 r = wikiutils.RWPageEmbed(colour=0x2b2233)
-                await r.rw_format(page)
+                await r.format(page)
 
                 await ctx.send(embed=r)
 
@@ -74,7 +74,7 @@ class RainWorldWiki(commands.Cog):
             r.add_field(name=f"Search for {query}:", value=(await wikiutils.get_page_refs(self.bot, 5, query))[0])
             return await ctx.send(embed=r)
 
-        await r.rw_format(page)
+        await r.format(page)
 
         await ctx.send(embed=r)
 
@@ -87,7 +87,7 @@ class RainWorldWiki(commands.Cog):
 
         await ctx.trigger_typing()
 
-        r = discord.Embed(colour=0x2b2233)
+        r = wikiutils.RWCreatureEmbed(colour=0x2b2233)
 
         try:
             if query.lower() in ["lttm", "looks to the moon"]:
@@ -104,34 +104,7 @@ class RainWorldWiki(commands.Cog):
             r.add_field(name=f"Search for {query}:", value=(await wikiutils.get_page_refs(self.bot, 5, query))[0])
             return await ctx.send(embed=r)
 
-        r.set_author(name=page.title, url=page.url)
-        parsed = await wikiutils.parse_page(page.url)
-
-        if page.title == "Lizards":
-            r.description = "There are many different types of lizards in Rain World. " \
-                            "To see their stats, be specific: e.g. `creature green lizard`!"
-
-        else:
-            stats_blocks = wikiutils.get_creature_stats(parsed)
-
-            if stats_blocks:
-                for block in stats_blocks:
-                    for k in block.keys():
-                        r.add_field(name=k, value=block[k])
-                    r.add_field(name="\u200B", value="\u200B", inline=False)
-
-            else:
-                if page.title == "Five Pebbles (character)":
-                    r.description = "Ah, that's me."
-                elif page.title == "Looks to the Moon (character)":
-                    r.description = "Looks to the Moon... her state is considerably worse than mine."
-                else:
-                    r.description = "No data was found for this creature..."
-
-
-        thumbnail_url = wikiutils.get_page_thumbnail(parsed)
-        if thumbnail_url:
-            r.set_thumbnail(url=thumbnail_url)
+        await r.format(page)
 
         await ctx.send(embed=r)
 
@@ -169,17 +142,7 @@ class RainWorldWiki(commands.Cog):
 
         page = await self.bot.wiki.get_page(query)
 
-        r.set_author(name=page.title, url=page.url)
-        parsed = await wikiutils.parse_page(page.url)
-
-        r.description = f"{page.summary.split('.')[0]}."
-
-        threat_dict = wikiutils.get_region_threats(parsed)
-        r.format_threats(threat_dict)
-
-        img_url = wikiutils.get_region_map(parsed)
-        if img_url:
-            r.set_image(url=img_url)
+        await r.format(page)
 
         await ctx.send(embed=r)
 
