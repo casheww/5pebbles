@@ -24,7 +24,7 @@ region_dict = {
     "Unfortunate Development": ["ud", "unfortunate"],
     "Memory Conflux": ["memory co"],
     "General Systems Bus": ["gsb", "general"],
-    "Outskirts": ["outskirts"],
+    "Outskirts": ["outskirts"],     # 'su' code is special case bc of overlap w subterranean name - check in wiki.py
     "The Exterior": ["uw", "exterior", "the exterior"],
     "The Leg": ["the leg", "leg"],
     "The Wall": ["the wall", "wall"],
