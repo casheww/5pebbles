@@ -221,6 +221,8 @@ class RWRegionEmbed(RWBaseEmbed):
         if threat_toggle:
             threat_dict = get_region_threats(parsed)
             self.format_threats(threat_dict)
+        else:
+            self.set_footer(text="Add `-t` to your command call to see the region's threats.")
 
         img_url = get_region_map(parsed)
         if img_url:
