@@ -1,7 +1,7 @@
 import aiomediawiki.exceptions as wiki_errors
 import asyncio
 import discord
-from discord.ext import commands
+from discord.ext import commands, flags
 from main import Pebbles
 from src import wikiutils
 from typing import Optional
@@ -109,9 +109,14 @@ class RainWorldWiki(commands.Cog):
         await ctx.send(embed=r)
 
 
-    @commands.command(description="Provides region map and threats.",
+    @flags.add_flag("-t", action="store_true")
+    @flags.add_flag("query", nargs="+")
+    @flags.command(description="Provides region map and threats.",
                       aliases=["r"])
-    async def region(self, ctx, *, query):
+    async def region(self, ctx, **options):
+        threat_toggle = options["t"]
+        query = " ".join(options["query"])
+
         if len(query) > 40:
             return await ctx.send("Max. query length is 40 characters.")
 
@@ -141,8 +146,7 @@ class RainWorldWiki(commands.Cog):
             return await ctx.send(embed=r)
 
         page = await self.bot.wiki.get_page(query)
-
-        await r.format(page)
+        await r.r_format(page, threat_toggle)
 
         await ctx.send(embed=r)
 

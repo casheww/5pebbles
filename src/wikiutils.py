@@ -212,14 +212,15 @@ class RWRegionEmbed(RWBaseEmbed):
     def __init__(self, colour):
         super().__init__(colour)
 
-    async def format(self, page):
+    async def r_format(self, page, threat_toggle: bool):
         self.set_author(name=page.title, url=page.url)
         parsed = await parse_page(page.url)
 
         self.description = f"{page.summary.split('.')[0]}."
 
-        threat_dict = get_region_threats(parsed)
-        self.format_threats(threat_dict)
+        if threat_toggle:
+            threat_dict = get_region_threats(parsed)
+            self.format_threats(threat_dict)
 
         img_url = get_region_map(parsed)
         if img_url:
