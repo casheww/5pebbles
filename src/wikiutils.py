@@ -1,8 +1,26 @@
 import aiohttp
 from aiomediawiki import exceptions as wiki_errors
+from aiomediawiki.page import MediaWikiPage
+import asyncio
 from bs4 import BeautifulSoup
 import discord
+from discord.ext import commands
+import enum
 
+
+class PageType(enum.Enum):
+    Page = 1
+    Creature = 2
+    Region = 3
+    SearchResult = 4
+
+
+categories = {
+    PageType.Page: None,
+    PageType.Creature: "Creatures",
+    PageType.Region: "Regions",
+    PageType.SearchResult: None
+}
 
 region_dict = {
     "Chimney Canopy": ["cc", "chimney"],
@@ -32,14 +50,69 @@ region_dict = {
 }
 
 
-async def get_page_refs(bot, limit, query):
+async def result_selector(ctx: commands.Context, limit: int, query: str, page_type: PageType, *, threats=False):
+    pages_str, page_dict = await get_page_refs(ctx.bot, limit, query, page_type=page_type)
+
+    r = discord.Embed(colour=0x180d1f)
+
+    if page_type is PageType.SearchResult:
+        r.add_field(name="Search", value=pages_str)
+
+    else:
+        r.description = "Page not found :(\nMaybe you want one of these:"
+        r.add_field(name=f"Search for {query}:", value=pages_str)
+
+    r.set_footer(text="Reply with a number to correct to the corresponding page.")
+    await ctx.send(embed=r)
+
+    page_embed = await page_from_choice(ctx, page_dict, page_type)
+
+    if isinstance(page_embed, MediaWikiPage):
+        r = RWRegionEmbed(colour=0x33132d)
+        await r.r_format(page_embed, threats)
+        page_embed = r
+
+    if page_embed:
+        await ctx.send(embed=page_embed)
+
+
+async def page_from_choice(ctx: commands.Context, page_dict, page_type: PageType):
+    def check(m):
+        return m.channel == ctx.channel and m.author.id == ctx.author.id
+
+    try:
+        reply = await ctx.bot.wait_for("message", check=check, timeout=30)
+
+        if reply.content in page_dict.keys():
+            page = await ctx.bot.wiki.get_page(pageid=page_dict[reply.content])
+
+            p_type_map = {
+                PageType.Page: RWPageEmbed(colour=0x2b2233),
+                PageType.Creature: RWCreatureEmbed(colour=0x2b2233),
+                PageType.Region: None,
+                PageType.SearchResult: RWPageEmbed(colour=0x2b2233),
+            }
+            r = p_type_map[page_type]
+
+            if not r:
+                return page
+
+            await r.format(page)
+            return r
+
+    except asyncio.TimeoutError:
+        pass
+
+
+async def get_page_refs(bot, limit, query, *, page_type: PageType):
     pages = []
     page_dict = {}
     page_number = 1
     async for page in await bot.wiki.search(query, limit=limit):
-        pages.append(f"{page_number}. [{page.title}]({page.url})")
-        page_dict[str(page_number)] = page.pageid
-        page_number += 1
+        if categories[page_type] in page.categories:
+            pages.append(f"{page_number}. [{page.title}]({page.url})")
+            page_dict[str(page_number)] = page.pageid
+            page_number += 1
 
     if not pages:
         raise wiki_errors.MissingPage

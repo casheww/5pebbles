@@ -1,6 +1,4 @@
 import aiomediawiki.exceptions as wiki_errors
-import asyncio
-import discord
 from discord.ext import commands, flags
 from main import Pebbles
 from src import wikiutils
@@ -23,31 +21,7 @@ class RainWorldWiki(commands.Cog):
         await ctx.trigger_typing()
 
         limit = limit if limit is not None else 5
-
-        pages_str, page_dict = await wikiutils.get_page_refs(self.bot, limit, query)
-
-        r = discord.Embed(colour=0x180d1f)
-        r.add_field(name="Results", value=pages_str)
-        r.set_footer(text="Reply with a number to get the summary of the corresponding page.")
-
-        await ctx.send(embed=r)
-
-        def check(m):
-            return m.channel == ctx.channel and m.author.id == ctx.author.id
-
-        try:
-            reply = await self.bot.wait_for("message", check=check, timeout=30)
-
-            if reply.content in page_dict.keys():
-                page = await self.bot.wiki.get_page(pageid=page_dict[reply.content])
-
-                r = wikiutils.RWPageEmbed(colour=0x2b2233)
-                await r.format(page)
-
-                await ctx.send(embed=r)
-
-        except asyncio.TimeoutError:
-            pass
+        await wikiutils.result_selector(ctx, limit, query, wikiutils.PageType.SearchResult)
 
 
     @commands.command(description="Searches the wiki for results. "
@@ -59,24 +33,19 @@ class RainWorldWiki(commands.Cog):
 
         await ctx.trigger_typing()
 
-        r = wikiutils.RWPageEmbed(colour=0x2b2233)
-
         try:
             if query.lower().startswith("looks to the moon"):
                 query = query.lower().replace("looks to the moon", "Looks to the Moon")
             else:
                 query = query.title()
-                
+
+            r = wikiutils.RWPageEmbed(colour=0x2b2233)
             page = await self.bot.wiki.get_page(query)
+            await r.format(page)
+            await ctx.send(embed=r)
 
         except wiki_errors.MissingPage:
-            r.description = "Page not found :(\nMaybe you want one of these:"
-            r.add_field(name=f"Search for {query}:", value=(await wikiutils.get_page_refs(self.bot, 5, query))[0])
-            return await ctx.send(embed=r)
-
-        await r.format(page)
-
-        await ctx.send(embed=r)
+            await wikiutils.result_selector(ctx, 5, query, wikiutils.PageType.Page)
 
 
     @commands.command(description="Provides creature stats from the wiki.",
@@ -87,8 +56,6 @@ class RainWorldWiki(commands.Cog):
 
         await ctx.trigger_typing()
 
-        r = wikiutils.RWCreatureEmbed(colour=0x2b2233)
-
         try:
             if query.lower() in ["lttm", "looks to the moon"]:
                 query = "Looks to the Moon (character)"
@@ -96,17 +63,16 @@ class RainWorldWiki(commands.Cog):
                 query = query.title()
 
             page = await self.bot.wiki.get_page(query)
+
             if "Creatures" not in page.categories:
                 raise wiki_errors.MissingPage
 
+            r = wikiutils.RWCreatureEmbed(colour=0x2b2233)
+            await r.format(page)
+            await ctx.send(embed=r)
+
         except wiki_errors.MissingPage:
-            r.description = "Creature page not found :(\nMaybe you want one of these:"
-            r.add_field(name=f"Search for {query}:", value=(await wikiutils.get_page_refs(self.bot, 5, query))[0])
-            return await ctx.send(embed=r)
-
-        await r.format(page)
-
-        await ctx.send(embed=r)
+            await wikiutils.result_selector(ctx, 5, query, wikiutils.PageType.Creature)
 
 
     @flags.add_flag("-t", action="store_true")
@@ -121,8 +87,6 @@ class RainWorldWiki(commands.Cog):
             return await ctx.send("Max. query length is 40 characters.")
 
         await ctx.trigger_typing()
-
-        r = wikiutils.RWRegionEmbed(colour=0x33132d)
 
         try:
             found = False
@@ -140,15 +104,13 @@ class RainWorldWiki(commands.Cog):
             if not found:
                 raise wiki_errors.MissingPage
 
+            r = wikiutils.RWRegionEmbed(colour=0x33132d)
+            page = await self.bot.wiki.get_page(query)
+            await r.r_format(page, threat_toggle)
+            await ctx.send(embed=r)
+
         except wiki_errors.MissingPage:
-            r.description = "Region page not found :(\nMaybe you want one of these:"
-            r.add_field(name=f"Search for {query}:", value=(await wikiutils.get_page_refs(self.bot, 5, query))[0])
-            return await ctx.send(embed=r)
-
-        page = await self.bot.wiki.get_page(query)
-        await r.r_format(page, threat_toggle)
-
-        await ctx.send(embed=r)
+            await wikiutils.result_selector(ctx, 5, query, wikiutils.PageType.Region, threats=threat_toggle)
 
 
 def setup(bot):
