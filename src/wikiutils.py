@@ -56,9 +56,9 @@ async def parse_page(url):
 
 
 def get_page_thumbnail(parsed: BeautifulSoup):
-    img = parsed.find("img", attrs={"class": "thumbimage"})
+    img = parsed.find("a", attrs={"class": "image"})
     if img:
-        src = img["src"]
+        src = img.next_element["src"]
         try:
             src = "/".join(src.split("/")[:-4])
         except KeyError:
