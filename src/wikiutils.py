@@ -53,30 +53,50 @@ region_dict = {
 async def result_selector(ctx: commands.Context, limit: int, query: str, page_type: PageType, *, threats=False):
     pages_str, page_dict = await get_page_refs(ctx.bot, limit, query, page_type=page_type)
 
-    r = discord.Embed(colour=0x180d1f)
+    embed = discord.Embed(colour=0x180d1f)
 
     if page_type is PageType.SearchResult:
-        r.add_field(name="Search", value=pages_str)
+        embed.add_field(name="Search", value=pages_str)
 
     else:
-        r.description = "Page not found :(\nMaybe you want one of these:"
-        r.add_field(name=f"Search for {query}:", value=pages_str)
+        embed.description = "Page not found :(\nMaybe you want one of these:"
+        embed.add_field(name=f"Search for {query}:", value=pages_str)
 
-    r.set_footer(text="Reply with a number to correct to the corresponding page.")
-    await ctx.send(embed=r)
+    embed.set_footer(text="Reply with a number to correct to the corresponding page.")
+    await ctx.send(embed=embed)
 
-    page_embed = await page_from_choice(ctx, page_dict, page_type)
+    page = await page_from_choice(ctx, page_dict)
+    if not page:
+        return
 
-    if isinstance(page_embed, MediaWikiPage):
-        r = RWRegionEmbed(colour=0x33132d)
-        await r.r_format(page_embed, threats)
-        page_embed = r
+    p_type_map = {
+        PageType.Page: RWPageEmbed,
+        PageType.Creature: RWCreatureEmbed,
+        PageType.Region: RWRegionEmbed,
+        PageType.SearchResult: RWPageEmbed,
+    }
+    embed = p_type_map[page_type](colour=0x2b2233)
 
-    if page_embed:
-        await ctx.send(embed=page_embed)
+    if isinstance(embed, RWRegionEmbed):
+        await embed.r_format(page, threats)
+    else:
+        await embed.format(page)
+
+        if page_type is PageType.SearchResult:
+            if "Regions" in page.categories:
+                embed = RWRegionEmbed(colour=0x2b2233)
+                await embed.r_format(page, threats)
+
+            elif "Creatures" in page.categories:
+                creature_stats = await creature_special_ask(ctx)
+                if creature_stats:
+                    embed = RWCreatureEmbed(colour=0x2b2233)
+                    await embed.format(page)
+
+    await ctx.send(embed=embed)
 
 
-async def page_from_choice(ctx: commands.Context, page_dict, page_type: PageType):
+async def page_from_choice(ctx: commands.Context, page_dict):
     def check(m):
         return m.channel == ctx.channel and m.author.id == ctx.author.id
 
@@ -84,24 +104,25 @@ async def page_from_choice(ctx: commands.Context, page_dict, page_type: PageType
         reply = await ctx.bot.wait_for("message", check=check, timeout=30)
 
         if reply.content in page_dict.keys():
-            page = await ctx.bot.wiki.get_page(pageid=page_dict[reply.content])
-
-            p_type_map = {
-                PageType.Page: RWPageEmbed(colour=0x2b2233),
-                PageType.Creature: RWCreatureEmbed(colour=0x2b2233),
-                PageType.Region: None,
-                PageType.SearchResult: RWPageEmbed(colour=0x2b2233),
-            }
-            r = p_type_map[page_type]
-
-            if not r:
-                return page
-
-            await r.format(page)
-            return r
+            return await ctx.bot.wiki.get_page(pageid=page_dict[reply.content])
 
     except asyncio.TimeoutError:
         pass
+
+
+async def creature_special_ask(ctx: commands.Context):
+    await ctx.send("Do you want the creature stats?\n"
+                   "If no, the page summary will be returned instead.")
+
+    def check(m):
+        return m.channel == ctx.channel and m.author.id == ctx.author.id and \
+            m.content.lower() in ["y", "yes", "n", "no"]
+
+
+    answer = await ctx.bot.wait_for("message", check=check, timeout=30)
+    if answer.content.lower() in ["y", "yes"]:
+        return True
+    return False
 
 
 async def get_page_refs(bot, limit, query, *, page_type: PageType):
