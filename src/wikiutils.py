@@ -109,7 +109,7 @@ async def get_page_refs(bot, limit, query, *, page_type: PageType):
     page_dict = {}
     page_number = 1
     async for page in await bot.wiki.search(query, limit=limit):
-        if categories[page_type] in page.categories:
+        if categories[page_type] is None or categories[page_type] in page.categories:
             pages.append(f"{page_number}. [{page.title}]({page.url})")
             page_dict[str(page_number)] = page.pageid
             page_number += 1
