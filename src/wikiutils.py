@@ -1,6 +1,5 @@
 import aiohttp
 from aiomediawiki import exceptions as wiki_errors
-from aiomediawiki.page import MediaWikiPage
 import asyncio
 from bs4 import BeautifulSoup
 import discord
