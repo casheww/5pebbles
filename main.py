@@ -2,6 +2,7 @@ from aiomediawiki import MediaWiki
 import aiosqlite
 from datetime import datetime
 import db_interface
+import discord
 from discord.ext import commands
 import json
 import os
@@ -10,8 +11,11 @@ from src.context import CustomContext
 
 class Pebbles(commands.Bot):
     def __init__(self, version):
+        intents = discord.Intents.default()
+        intents.members = True
         super().__init__(command_prefix=self.get_prefix,
                          case_insensitive=True,
+                         intents=intents,
                          description="A bot that interacts with the Rain World Gamepedia. "
                                      "Written by casheww in Python. Completely unofficial.")
 
