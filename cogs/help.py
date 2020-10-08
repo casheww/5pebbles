@@ -6,6 +6,8 @@ hidden_cogs = ['Dev', 'EH', 'StatH', 'Help', 'Jishaku']
 
 
 class CustomHelp(commands.HelpCommand):
+    def __init__(self):
+        super().__init__(verify_checks=False)
 
 
     @staticmethod
