@@ -93,6 +93,9 @@ class RainWorldWiki(commands.Cog):
             if query.lower() == "su":
                 query = "Outskirts"
                 found = True
+            elif query.lower() == "sh":
+                query = "Shaded Citadel"
+                found = True
             else:
                 for region in wikiutils.region_dict.keys():
                     for alias in wikiutils.region_dict[region]:
