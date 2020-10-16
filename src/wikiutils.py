@@ -30,7 +30,7 @@ region_dict = {
     "Subterranean": ["sb", "sub"],
     "Filtration System": ["filtration"],
     "Depths": ["depths", "the depths"],
-    "Shaded Citadel": ["sh", "shaded"],
+    "Shaded Citadel": ["shaded"],    # 'sh' is special case bc overlap w shoreline
     "Memory Crypts": ["mc", "memory cr"],
     "Sky Islands": ["si", "sky"],
     "Communications Array": ["communication"],
