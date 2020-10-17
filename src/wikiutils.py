@@ -183,12 +183,14 @@ def get_creature_stats(parsed: BeautifulSoup):
 
         stat_block["Name"] = rows[0].text.strip("\n\"")
 
-        for i in range(3, 6):
+        for i in range(3, 7):
             try:
                 parts = rows[i].text.split("\n")
+                if parts[1] == "":
+                    continue
                 stat_block[parts[1]] = parts[2]
             except (IndexError, KeyError):
-                pass
+                continue
         stats_blocks.append(stat_block)
 
     return stats_blocks
@@ -232,14 +234,11 @@ class RWBaseEmbed(discord.Embed):
 
     def add_hyperlink(self, url):
         hyper = f"\n\n[View this page]({url})"
-        if len(self.fields) == 0:
-            self.description += hyper
+        if self.description == discord.Embed.Empty:
+            self.description = hyper
         else:
-            f_name = self.fields[-1].name
-            f_value = self.fields[-1].value
-            self.remove_field(-1)
-            self.add_field(name=f_name,
-                           value=f_value+hyper)
+            self.description += hyper
+
 
     async def format(self, page):
         ...
@@ -286,6 +285,8 @@ class RWCreatureEmbed(RWBaseEmbed):
                 for block in stats_blocks:
                     for k in block.keys():
                         self.add_field(name=k, value=block[k])
+                    self.add_field(name="\u200b", value="\u200b", inline=False)
+                self.remove_field(-1)
 
             else:
                 if page.title == "Five Pebbles (character)":
