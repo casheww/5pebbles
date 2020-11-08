@@ -59,7 +59,15 @@ class Misc(commands.Cog):
         buffer.seek(0)
         return buffer
 
-    @commands.is_owner()
+    @staticmethod
+    async def rwtext_check(ctx):
+        if ctx.guild and ctx.guild.id == 291184728944410624:
+            if 366341475522576386 not in [r.id for r in ctx.author.roles] \
+                    and ctx.author.id != 444857307843657739:
+                return False
+        return True
+
+    @commands.check(rwtext_check)
     @commands.command(description="Generates a Rain World style region title from text.")
     async def rwtext(self, ctx, *, text):
         await ctx.trigger_typing()
