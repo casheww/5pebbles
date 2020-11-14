@@ -51,7 +51,9 @@ class EH(commands.Cog):
             await ctx.send(msg)
             return
 
-        await ctx.send(tb.extract_tb(error.__traceback__), delete_after=10)
+        await ctx.send("Whoops, something went wrong. Developer has been notified.", delete_after=10)
+        error_string = f"command: {ctx.command}\n{tb.format_stack()}"
+        await self.bot.get_user(self.bot.owner_id).send(error_string)
         raise error
 
 
