@@ -294,7 +294,7 @@ class RWCreatureEmbed(RWBaseEmbed):
                 elif page.title == "Looks to the Moon (character)":
                     self.description = "Looks to the Moon... her state is considerably worse than mine."
                 else:
-                    self.description = "No data was found for this creature..."
+                    self.description = "No data was found for this creature... (no data card on wiki page)"
 
         thumbnail_url = get_page_thumbnail(parsed)
         if thumbnail_url:
