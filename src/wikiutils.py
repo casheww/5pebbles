@@ -175,24 +175,24 @@ def get_creature_stats(parsed: BeautifulSoup):
     """ This was painful. """
     source_stats_tables = parsed.find_all("table", attrs={"class": "infoboxtable"})
     source_stats_tables = [x.find("tbody") for x in source_stats_tables]
-
+    
     stats_blocks = []
     for t in source_stats_tables:
-        stat_block = {}
-        rows = t.find_all("tr")
-
-        stat_block["Name"] = rows[0].text.strip("\n\"")
-
-        for i in range(3, 7):
-            try:
-                parts = rows[i].text.split("\n")
-                if parts[1] == "":
-                    continue
-                stat_block[parts[1]] = parts[2]
-            except (IndexError, KeyError):
-                continue
-        stats_blocks.append(stat_block)
-
+      stat_block = {}
+      rows = t.find_all("tr")
+      stat_block["Name"] = rows[0].text.strip("\n\"")
+    
+      for i in range(3, 7):
+        try:
+          parts = [s for s in rows[i].text.split("\n") if s != ""]
+          if parts[0] == "":
+            continue
+          stat_block[parts[0]] = parts[1]
+        except (IndexError, KeyError):
+          continue
+        
+      stats_blocks.append(stat_block)
+    
     return stats_blocks
 
 
