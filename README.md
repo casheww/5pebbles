@@ -14,3 +14,5 @@ Note that if you want the bot to listen for "prefix command" with a space, you m
 `creature/c <query>` - tries to find a Creature page with a title matching the query and and returns what creature stats and spawn info it can find. Similar to the `page` command. 
 
 `region/r [-t] <query>` - sends a map of the Region. Similar to the `creature` and `page` commands. The `-t` flag toggles whether the region's threats are displayed.
+
+`rwtext <text>` - generates an image of the input text made up of the text used for Rain World's region names. In the Rain World discord, this command is restricted to staff, so invite to your own server for use if you do not fall into this category. 
