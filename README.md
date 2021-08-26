@@ -1,5 +1,5 @@
 # 5pebbles
-A Discord bot written with discord.py that interacts with the Rain World Gamepedia. Unofficial, ofc.
+A Discord bot written with discord.py that interacts with the Rain World wiki. Unofficial, ofc.
 
 If you'd like to add this bot to your server, you can use [this link](https://discord.com/api/oauth2/authorize?client_id=739950956313051219&permissions=67488832&scope=bot). This could probably be recycled for use with other Gamepedia based sites.
 
