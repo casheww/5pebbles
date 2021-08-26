@@ -16,7 +16,7 @@ class Pebbles(commands.Bot):
         super().__init__(command_prefix=self.get_prefix,
                          case_insensitive=True,
                          intents=intents,
-                         description="A bot that interacts with the Rain World Gamepedia. "
+                         description="A bot that interacts with the Rain World wiki. "
                                      "Written by casheww in Python. Completely unofficial.")
 
         self.db = None
@@ -24,7 +24,7 @@ class Pebbles(commands.Bot):
         self.prefix_dict = {}
         self.start_time = datetime.now()
         self.version = version
-        self.wiki = MediaWiki(url="https://rainworld.gamepedia.com/api.php")
+        self.wiki = MediaWiki(url="https://rainworld.miraheze.org/w/api.php")
 
 
     async def get_prefix(self, message):

@@ -10,7 +10,7 @@ class RainWorldWiki(commands.Cog):
         self.bot = bot
 
 
-    @commands.command(description="Clears the bot's wiki cache")
+    @commands.command(description="Clears the bot's wiki cache.")
     @commands.check_any(commands.has_role(291207293905928193), commands.is_owner())
     async def clear_cache(self, ctx):
         self.bot.wiki.cache.clean()

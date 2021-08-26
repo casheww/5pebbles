@@ -82,7 +82,7 @@ class Misc(commands.Cog):
 
         await ctx.send(file=discord.File(buffer, f"{text[:6]}.png"))
 
-    @commands.command(description="garkxkarkx")
+    @commands.command(description="garrakx")
     async def garrakx(self, ctx):
         await ctx.send("https://cdn.discordapp.com/attachments/291185557789343744/827564809612558386/781913424148824136.gif")
 
