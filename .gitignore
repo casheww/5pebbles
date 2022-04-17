@@ -1,4 +1,5 @@
-db
+*.db
 .idea
 _keys.json
 *.pyc
+.vscode
