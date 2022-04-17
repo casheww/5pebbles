@@ -1,5 +1,4 @@
 from datetime import datetime as dt
-import db_interface
 from discord.ext import commands
 from main import Pebbles
 

@@ -1,0 +1,18 @@
+[Unit]
+Description=Rain World wiki bot
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=serviceuser
+ExecStartPre=
+ExecStart=python3 /home/ubuntu/5pebbles/main.py
+ExecStartPost
+ExecStop=
+ExecReload=
+
+[Install]
+WantedBy=multi-user.target

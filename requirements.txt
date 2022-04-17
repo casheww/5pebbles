@@ -1,4 +1,5 @@
 aiosqlite
+beautifulsoup4
 discord.py
 git+https://github.com/bijij/Flag-Parsing
 jishaku
