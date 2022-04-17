@@ -10,7 +10,7 @@ sudo systemctl daemon-reload
 echo "systemctl daemon reloaded"
 sudo systemctl enable rw_wiki_bot
 echo "systemctl service enabled"
-sudo systemctl start rw_wiki_bot start
+sudo systemctl start rw_wiki_bot
 echo "systemctl setup done"
 
 echo "reminder: I need a _keys.json file with a version string and Discord token"
