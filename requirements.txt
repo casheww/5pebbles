@@ -4,3 +4,4 @@ discord.py
 git+https://github.com/bijij/Flag-Parsing
 jishaku
 git+https://github.com/jucacrispim/aiomediawiki
+Pillow
