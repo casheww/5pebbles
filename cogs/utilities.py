@@ -23,7 +23,7 @@ class Utilities(commands.Cog):
     async def info(self, ctx):
 
         embed = discord.Embed(description=self.bot.description, colour=ctx.colour)
-        embed.set_author(name=str(self.bot.user), url="https://www.github.com/casheww/kahu")
+        embed.set_author(name=str(self.bot.user), url="https://www.github.com/casheww/5pebbles")
         embed.add_field(name="Users", value=str(len(self.bot.users)))
         embed.add_field(name="Guilds", value=str(len(self.bot.guilds)))
         embed.add_field(name="\u200B", value=f"**Bot version**: {self.bot.version}\n"
