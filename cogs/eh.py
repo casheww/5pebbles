@@ -52,7 +52,7 @@ class EH(commands.Cog):
             return
 
         await ctx.send("Whoops, something went wrong. Developer has been notified.", delete_after=10)
-        error_string = f"command: {ctx.command}\n```{''.join(tb.format_exception(type(error), error, error.__traceback__))}```"
+        error_string = f"command: {ctx.message.content}\n```{''.join(tb.format_exception(type(error), error, error.__traceback__))}```"
         await (await self.bot.application_info()).owner.send(error_string)
 
 
