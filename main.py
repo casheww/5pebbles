@@ -11,15 +11,14 @@ if __name__ == "__main__":
         v = keys["version"]
 
     bot = Pebbles(version=v)
-    _cd = commands.CooldownMapping.from_cooldown(3, 12, commands.BucketType.user)
-    _cd_rw_guild = commands.CooldownMapping.from_cooldown(1, 15, commands.BucketType.user)
+    _cd = commands.CooldownMapping.from_cooldown(3, 10, commands.BucketType.user)
 
     @bot.check
     async def cooldown_check(ctx):
-        if ctx.guild.id == 291184728944410624:
-            bucket = _cd_rw_guild.get_bucket(ctx.message)
-        else:
-            bucket = _cd.get_bucket(ctx.message)
+        if ctx.author.id == (await self.bot.application_info()).owner.id:
+            return True
+
+        bucket = _cd.get_bucket(ctx.message)
 
         retry_after = bucket.update_rate_limit()
         if retry_after:
