@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     @bot.check
     async def cooldown_check(ctx):
-        if ctx.author.id == (await self.bot.application_info()).owner.id:
+        if ctx.author.id == (await bot.application_info()).owner.id:
             return True
 
         bucket = _cd.get_bucket(ctx.message)

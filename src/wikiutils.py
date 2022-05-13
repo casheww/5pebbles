@@ -150,19 +150,17 @@ async def parse_page(url):
 
 def get_page_thumbnail(parsed: BeautifulSoup):
     info_table = parsed.find("table", attrs={"class": "infoboxtable"})
-    if info_table is None:
-        return
+    image_from = info_table if info_table is not None or parsed.contents[1].name != "a" else parsed
 
-    thumb_a = info_table.find("a", attrs={"class": "image"})
-    if thumb_a is None:
-        return
-
-    img = thumb_a.find("img")
-    if img is None:
-        return
-
-    return img["srcset"].split(" ")[0]
-
+    image_links = info_table.find_all("a", attrs={"class": "image"})
+    thumb_a = image_links[1] if image_from == info_table and len(image_links) > 1 else image_links[0]
+    
+    if thumb_a is not None:
+        img = thumb_a.find("img")
+        if img is not None and "src" in img.attrs.keys():
+            return img["src"]
+    
+    return
 
 def get_region_map(parsed: BeautifulSoup):
     """ thanks Henpemaz """
